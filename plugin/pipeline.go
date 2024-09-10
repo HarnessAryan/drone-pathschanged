@@ -146,4 +146,10 @@ type Pipeline struct {
 	Tag struct {
 		Name string `envconfig:"DRONE_TAG"`
 	}
+
+	// Output provides the file where variables are written to
+	// be shared with later steps.
+	Output struct {
+		Name string `envconfig:"DRONE_OUTPUT"`
+	}
 }

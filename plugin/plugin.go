@@ -8,6 +8,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 
 	filepath "github.com/bmatcuk/doublestar"
 
@@ -37,6 +39,10 @@ type Args struct {
 
 // Exec executes the plugin.
 func Exec(ctx context.Context, args Args) error {
+	// matchSeen will be true if a file changed in the commit range
+	// matches the include/exclude pattern(s)
+	matchSeen := false
+
 	// set some default fields for logs
 	requestLogger := logrus.New()
 
@@ -55,9 +61,12 @@ func Exec(ctx context.Context, args Args) error {
 			got, want := match(&args, file), true
 			if got == want {
 				requestLogger.Infoln("match seen for file", file)
+				matchSeen = true
 			}
 		}
 	}
+
+	writeOutput(&args, "MATCH_SEEN", strconv.FormatBool(matchSeen))
 
 	return nil
 }
@@ -72,6 +81,9 @@ func validate(args *Args) error {
 	}
 
 	// variables automatically set by Drone/Harness
+	if args.Output.Name == "" {
+		return fmt.Errorf("DRONE_OUTPUT is unset")
+	}
 	if args.Pipeline.Commit.Before == "" {
 		return fmt.Errorf("DRONE_COMMIT_BEFORE is unset")
 	}
@@ -166,4 +178,20 @@ func excludes(patterns []string, v string) bool {
 		}
 	}
 	return false
+}
+
+// writeOutput writes a variable and its value to the output file.
+func writeOutput(args *Args, key, value string) error {
+	outputFile, err := os.OpenFile(args.Output.Name, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return fmt.Errorf("failed to open output file: %w", err)
+	}
+	defer outputFile.Close()
+
+	_, err = fmt.Fprintf(outputFile, "%s=%s\n", key, value)
+	if err != nil {
+		return fmt.Errorf("failed to write to env: %w", err)
+	}
+
+	return nil
 }
