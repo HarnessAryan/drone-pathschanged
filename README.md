@@ -1,6 +1,6 @@
 Drone plugin to detect files changed in a commit range.
 
-This goal of this plugin is to provide an alternative to the [pathschanged conversion extension](https://github.com/jimsheldon/drone-pathschanged) as a pipeline plugin.
+This goal of this plugin is to provide an alternative to the [pathschanged conversion extension](https://github.com/meltwater/drone-convert-pathschanged) as a pipeline plugin.
 
 # Usage
 
