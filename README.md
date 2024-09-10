@@ -2,6 +2,10 @@ Drone plugin to detect files changed in a commit range.
 
 # Usage
 
+NOTE: This plugin writes to [DRONE_OUTPUT](https://developer.harness.io/docs/continuous-integration/troubleshoot-ci/ci-env-var/#drone_output) which is a feature of Harness CI.
+
+To use this plugin in a Drone pipeline, you must manage the `DRONE_OUTPUT` file yourself. 
+
 The following settings changes this plugin's behavior.
 
 * param1 (optional) does something.
