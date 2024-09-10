@@ -21,23 +21,25 @@ func main() {
 		logrus.Fatalln(err)
 	}
 
+	logrus.SetFormatter(textFormatter)
 	switch args.Level {
 	case "debug":
-		logrus.SetFormatter(textFormatter)
 		logrus.SetLevel(logrus.DebugLevel)
 	case "trace":
-		logrus.SetFormatter(textFormatter)
 		logrus.SetLevel(logrus.TraceLevel)
+	default:
+		logrus.SetLevel(logrus.InfoLevel)
 	}
 
 	if err := plugin.Exec(context.Background(), args); err != nil {
-		logrus.Fatalln(err)	
+		logrus.Fatalln(err)
 	}
 }
 
 // default formatter that writes logs without including timestamp
 // or level information.
-type formatter struct {}
+type formatter struct{}
+
 func (*formatter) Format(entry *logrus.Entry) ([]byte, error) {
 	return []byte(entry.Message), nil
 }

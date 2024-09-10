@@ -29,19 +29,16 @@ type Args struct {
 	// Exclude patterns to check
 	Exclude []string `envconfig:"PLUGIN_EXCLUDE"`
 
-	GithubToken  string `envconfig:"PLUGIN_GITHUB_TOKEN"`
+	// GitHub API Token
+	GithubToken string `envconfig:"PLUGIN_GITHUB_TOKEN"`
+	//
 	GithubServer string `envconfig:"PLUGIN_GITHUB_SERVER"`
 }
 
 // Exec executes the plugin.
 func Exec(ctx context.Context, args Args) error {
 	// set some default fields for logs
-	requestLogger := logrus.WithFields(logrus.Fields{
-		"build_after":    args.Commit.After,
-		"build_before":   args.Commit.Before,
-		"repo_namespace": args.Repo.Namespace,
-		"repo_name":      args.Repo.Name,
-	})
+	requestLogger := logrus.New()
 
 	err := validate(&args)
 	if err != nil {
@@ -52,7 +49,6 @@ func Exec(ctx context.Context, args Args) error {
 	if err != nil {
 		return err
 	}
-	requestLogger.Infoln("files are", files)
 
 	if len(files) > 0 {
 		for _, file := range files {
@@ -63,20 +59,35 @@ func Exec(ctx context.Context, args Args) error {
 		}
 	}
 
-	// write code here
 	return nil
 }
 
 func validate(args *Args) error {
+	// variables set by plugin parameters
 	if args.GithubToken == "" {
 		return fmt.Errorf("missing github token")
+	}
+	if len(args.Include) == 0 && len(args.Exclude) == 0 {
+		return fmt.Errorf("include or exclude must be set")
+	}
+
+	// variables automatically set by Drone/Harness
+	if args.Pipeline.Commit.Before == "" {
+		return fmt.Errorf("DRONE_COMMIT_BEFORE is unset")
+	}
+	if args.Pipeline.Commit.After == "" {
+		return fmt.Errorf("DRONE_COMMIT_BEFORE is unset")
+	}
+	if args.Pipeline.Repo.Slug == "" {
+		return fmt.Errorf("DRONE_REPO is unset")
 	}
 
 	return nil
 }
 
+// getGithubFilesChanged gets a list of files changed between before and after
+// commits that triggered the pipeline
 func getGithubFilesChanged(ctx context.Context, args *Args) ([]string, error) {
-
 	var client *scm.Client
 	var err error
 
@@ -110,7 +121,7 @@ func getGithubFilesChanged(ctx context.Context, args *Args) ([]string, error) {
 		}
 	}
 
-	logrus.Infoln("Token API calls per hour remaining: ", result.Rate.Remaining)
+	logrus.Debugln("token API calls per hour remaining:", result.Rate.Remaining)
 
 	var files []string
 	for _, c := range changes {
