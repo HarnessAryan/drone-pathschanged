@@ -43,8 +43,9 @@ func Exec(ctx context.Context, args Args) error {
 	// matches the include/exclude pattern(s)
 	matchSeen := false
 
-	// set some default fields for logs
-	requestLogger := logrus.New()
+	logrus.SetFormatter(&logrus.TextFormatter{
+		DisableTimestamp: true,
+	})
 
 	err := validate(&args)
 	if err != nil {
@@ -60,7 +61,7 @@ func Exec(ctx context.Context, args Args) error {
 		for _, file := range files {
 			got, want := match(&args, file), true
 			if got == want {
-				requestLogger.Infoln("match seen for file", file)
+				logrus.Infoln("match seen for file", file)
 				matchSeen = true
 			}
 		}
