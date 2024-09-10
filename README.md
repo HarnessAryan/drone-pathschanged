@@ -4,9 +4,9 @@ This goal of this plugin is to provide an alternative to the [pathschanged conve
 
 # Usage
 
-NOTE: This plugin writes to [DRONE_OUTPUT](https://developer.harness.io/docs/continuous-integration/troubleshoot-ci/ci-env-var/#drone_output) which is a feature of [Harness CI](https://www.harness.io/products/continuous-integration).
+NOTE: This plugin writes to [DRONE_OUTPUT](https://developer.harness.io/docs/continuous-integration/troubleshoot-ci/ci-env-var/#drone_output) which is a feature of [Harness CI](https://www.harness.io/products/continuous-integration). The `DRONE_OUTPUT` file will contain a `MATCH_SEEN` variable which will be `true` if a match was seen, and `false` otherwise.
 
-To use this plugin in a Drone pipeline, you must manage the `DRONE_OUTPUT` file and variable yourself. 
+To use this plugin in a Drone pipeline, you must manage the `DRONE_OUTPUT` file and variable yourself.
 
 This extension uses [doublestar](https://github.com/bmatcuk/doublestar) for matching paths changed in your commit range, refer to their documentation for all supported patterns.
 
