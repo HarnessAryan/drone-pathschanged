@@ -59,7 +59,7 @@ func Exec(ctx context.Context, args Args) error {
 
 	if len(files) > 0 {
 		for _, file := range files {
-			got, want := match(&args, file), true
+			got, want := match(args.Exclude, args.Include, file), true
 			if got == want {
 				logrus.Infoln("match seen for file", file)
 				matchSeen = true
@@ -146,14 +146,14 @@ func getGithubFilesChanged(ctx context.Context, args *Args) ([]string, error) {
 
 // match returns true if the string matches the include
 // patterns and does not match any of the exclude patterns.
-func match(args *Args, file string) bool {
-	if excludes(args.Exclude, file) {
+func match(exclude []string, include []string, file string) bool {
+	if excludes(exclude, file) {
 		return false
 	}
-	if includes(args.Include, file) {
+	if includes(include, file) {
 		return true
 	}
-	if len(args.Include) == 0 {
+	if len(include) == 0 {
 		return true
 	}
 	return false
