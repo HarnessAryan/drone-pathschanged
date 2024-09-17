@@ -89,7 +89,7 @@ func validate(args *Args) error {
 		return fmt.Errorf("DRONE_COMMIT_BEFORE is unset")
 	}
 	if args.Pipeline.Commit.After == "" {
-		return fmt.Errorf("DRONE_COMMIT_BEFORE is unset")
+		return fmt.Errorf("DRONE_COMMIT_AFTER is unset")
 	}
 	if args.Pipeline.Repo.Slug == "" {
 		return fmt.Errorf("DRONE_REPO is unset")
