@@ -65,3 +65,4 @@ docker run --rm \
   -v $(pwd):/drone/src \
   jimsheldon/drone-pathschanged
 ```
+DEMO changes
